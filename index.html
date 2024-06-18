@@ -5,121 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Steen Papier Schaar</title>
-</head>
-
-<body>
-
-    <div class="screen">
-
-        <h1>Steen Papier Schaar</h1>
-
-        <div class="content">
-            <div class="result-section">
-                <h2>Cpu:</h2><span id="computer" class="choice"></span>
-            </div>
-            <div class="result-section">
-                <h2>Your choice:</h2><span id="human" class="choice"></span>
-            </div>
-            <div class="result-section">
-                <h2>Result:</h2><span id="result" class="choice"></span>
-            </div>
-        </div>
-
-        <div class="button-section">
-            <button id="steenbtn"><img src="img/steen.png" alt="steen"></button>
-            <button id="papierbtn"><img src="img/papier.png" alt="papier"></button>
-            <button id="schaarbtn"><img src="img/schaar.png" alt="schaar"></button>
-        </div>
-
-        <div class="counters">
-            <h2>Rounds: <span id="rounds">0</span></h2>
-            <h2>Streak: <span id="streak">0</span></h2>
-            <h2>Player Wins: <span id="playerWins">0</span></h2>
-            <h2>Computer Wins: <span id="computerWins">0</span></h2>
-        </div>
-
-        <div class="reset-section">
-            <button id="resetbtn">Reset</button>
-        </div>
-
-    </div>
-
-    <script>
-        // Array met keuzes
-        const choices = [
-            { name: "steen", image: "img/steen.png" },
-            { name: "papier", image: "img/papier.png" },
-            { name: "schaar", image: "img/schaar.png" }
-        ];
-
-        // Counters
-        let roundCounter = 0;
-        let humanStreakCounter = 0;
-        let playerWinsCounter = 0;
-        let computerWinsCounter = 0;
-
-        // Functie om een willekeurige keuze te maken voor de computer
-        function computerPlay() {
-            return choices[Math.floor(Math.random() * choices.length)];
-        }
-
-        // Functie om te bepalen wie er wint
-        function playRound(playerSelection, computerSelection) {
-            if (playerSelection === computerSelection.name) {
-                return "Gelijkspel!";
-            } else if (
-                (playerSelection === "steen" && computerSelection.name === "schaar") ||
-                (playerSelection === "papier" && computerSelection.name === "steen") ||
-                (playerSelection === "schaar" && computerSelection.name === "papier")
-            ) {
-                return "Jij wint!";
-            } else {
-                return "Computer wint!";
-            }
-        }
-
-        // Functie om de ronde, streak en wins bij te werken
-        function updateCounters(result) {
-            roundCounter++;
-            document.getElementById("rounds").innerText = roundCounter;
-
-            if (result === "Jij wint!") {
-                humanStreakCounter++;
-                playerWinsCounter++;
-            } else {
-                humanStreakCounter = 0;
-                if (result === "Computer wint!") {
-                    computerWinsCounter++;
-                }
-            }
-            document.getElementById("streak").innerText = humanStreakCounter;
-            document.getElementById("playerWins").innerText = playerWinsCounter;
-            document.getElementById("computerWins").innerText = computerWinsCounter;
-        }
-
-        // Event listeners voor de keuze knoppen
-        document.querySelectorAll("button:not(#resetbtn)").forEach(button => {
-            button.addEventListener("click", function () {
-                const computerSelection = computerPlay();
-                const playerSelection = button.id.replace("btn", "");
-                const playerChoice = choices.find(choice => choice.name === playerSelection);
-                const result = playRound(playerSelection, computerSelection);
-
-                document.getElementById("computer").innerHTML = `<img src="${computerSelection.image}" alt="${computerSelection.name}" style="width: 50px;">`;
-                document.getElementById("human").innerHTML = `<img src="${playerChoice.image}" alt="${playerChoice.name}" style="width: 50px;">`;
-                document.getElementById("result").innerText = result;
-
-                updateCounters(result);
-            });
-        });
-
-        // Event listener voor de reset knop
-        document.getElementById("resetbtn").addEventListener("click", function () {
-            location.reload();
-        });
-
-    </script>
-
     <style>
         html,
         body {
@@ -239,7 +124,152 @@
             font-size: 20px;
             color: #fff;
         }
+
+        .result {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .win {
+            color: green;
+        }
+
+        .lose {
+            color: red;
+        }
+
+        .draw {
+            color: orange;
+        }
     </style>
+    <audio id="winSound" src="sounds/win.mp3"></audio>
+    <audio id="loseSound" src="sounds/lose.mp3"></audio>
+</head>
+
+<body>
+
+    <div class="screen">
+
+        <h1>Steen Papier Schaar</h1>
+
+        <div class="content">
+            <div class="result-section">
+                <h2>Cpu:</h2><span id="computer" class="choice"></span>
+            </div>
+            <div class="result-section">
+                <h2>Your choice:</h2><span id="human" class="choice"></span>
+            </div>
+            <div class="result-section">
+                <h2>Result:</h2><span id="result" class="choice result"></span>
+            </div>
+        </div>
+
+        <div class="button-section">
+            <button id="steenbtn"><img src="img/steen.png" alt="steen"></button>
+            <button id="papierbtn"><img src="img/papier.png" alt="papier"></button>
+            <button id="schaarbtn"><img src="img/schaar.png" alt="schaar"></button>
+        </div>
+
+        <div class="counters">
+            <h2>Rounds: <span id="rounds">0</span></h2>
+            <h2>Streak: <span id="streak">0</span></h2>
+            <h2>Player Wins: <span id="playerWins">0</span></h2>
+            <h2>Computer Wins: <span id="computerWins">0</span></h2>
+        </div>
+
+        <div class="reset-section">
+            <button id="resetbtn">Reset</button>
+        </div>
+
+    </div>
+
+    <script>
+        // Array met keuzes
+        const choices = [
+            { name: "steen", image: "img/steen.png" },
+            { name: "papier", image: "img/papier.png" },
+            { name: "schaar", image: "img/schaar.png" }
+        ];
+
+        // Counters
+        let roundCounter = 0;
+        let humanStreakCounter = 0;
+        let playerWinsCounter = 0;
+        let computerWinsCounter = 0;
+
+        // Functie om een willekeurige keuze te maken voor de computer
+        function computerPlay() {
+            return choices[Math.floor(Math.random() * choices.length)];
+        }
+
+        // Functie om te bepalen wie er wint
+        function playRound(playerSelection, computerSelection) {
+            if (playerSelection === computerSelection.name) {
+                return "Gelijkspel!";
+            } else if (
+                (playerSelection === "steen" && computerSelection.name === "schaar") ||
+                (playerSelection === "papier" && computerSelection.name === "steen") ||
+                (playerSelection === "schaar" && computerSelection.name === "papier")
+            ) {
+                return "Jij wint!";
+            } else {
+                return "Computer wint!";
+            }
+        }
+
+        // Functie om de ronde, streak en wins bij te werken
+        function updateCounters(result) {
+            roundCounter++;
+            document.getElementById("rounds").innerText = roundCounter;
+
+            if (result === "Jij wint!") {
+                humanStreakCounter++;
+                playerWinsCounter++;
+                document.getElementById("winSound").play(); // Play win sound
+            } else {
+                humanStreakCounter = 0;
+                if (result === "Computer wint!") {
+                    computerWinsCounter++;
+                    document.getElementById("loseSound").play(); // Play lose sound
+                }
+            }
+            document.getElementById("streak").innerText = humanStreakCounter;
+            document.getElementById("playerWins").innerText = playerWinsCounter;
+            document.getElementById("computerWins").innerText = computerWinsCounter;
+        }
+
+        // Event listeners voor de keuze knoppen
+        document.querySelectorAll("button:not(#resetbtn)").forEach(button => {
+            button.addEventListener("click", function () {
+                const computerSelection = computerPlay();
+                const playerSelection = button.id.replace("btn", "");
+                const playerChoice = choices.find(choice => choice.name === playerSelection);
+                const result = playRound(playerSelection, computerSelection);
+
+                document.getElementById("computer").innerHTML = `<img src="${computerSelection.image}" alt="${computerSelection.name}" style="width: 50px;">`;
+                document.getElementById("human").innerHTML = `<img src="${playerChoice.image}" alt="${playerChoice.name}" style="width: 50px;">`;
+
+                const resultElement = document.getElementById("result");
+                resultElement.innerText = result;
+                resultElement.classList.remove("win", "lose", "draw");
+                if (result === "Jij wint!") {
+                    resultElement.classList.add("win");
+                } else if (result === "Computer wint!") {
+                    resultElement.classList.add("lose");
+                } else {
+                    resultElement.classList.add("draw");
+                }
+
+                updateCounters(result);
+            });
+        });
+
+        // Event listener voor de reset knop
+        document.getElementById("resetbtn").addEventListener("click", function () {
+            location.reload();
+        });
+
+    </script>
 
 </body>
 
