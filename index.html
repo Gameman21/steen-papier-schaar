@@ -191,7 +191,7 @@
             { name: "schaar", image: "img/schaar.png" }
         ];
 
-        // Counters
+        // Counters op 0 zetten
         let roundCounter = 0;
         let humanStreakCounter = 0;
         let playerWinsCounter = 0;
@@ -239,7 +239,7 @@
         }
 
         // Event listeners voor de keuze knoppen
-        document.querySelectorAll("button:not(#resetbtn)").forEach(button => {
+        document.querySelectorAll("button[id^='steen'], button[id^='papier'], button[id^='schaar']").forEach(button => {
             button.addEventListener("click", function () {
                 const computerSelection = computerPlay();
                 const playerSelection = button.id.replace("btn", "");
