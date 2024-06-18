@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Steen Papier Schaar</title>
+    <script src="main.js"></script>
+</head>
+
+<body>
+
+    <div class="screen"">
+
+        <div class="content">
+            <h1>Computer:</h1><span id="computer"></span>
+            <br>
+            <h1>Jouw Keuze:</h1><span id="human"></span>
+            <br>
+            <h1>Uitkomst:</h1><span id="result"></span>
+        </div>
+
+        <div style="padding-top: 40px;">
+            <button id="steenbtn"><img src="img/steen.png" alt="steen"></button>
+            <button id="papierbtn"><img src="img/papier.png" alt="papier"></button>
+            <button id="schaarbtn"><img src="img/schaar.png" alt="schaar"></button>
+        </div>
+
+    </div>
+
+    <script>
+
+        // Array met keuzes
+        const choices = ["steen", "papier", "schaar"];
+
+        // Functie om een willekeurige keuze te maken voor de computer
+        function computerPlay() {
+            return choices[Math.floor(Math.random() * choices.length)];
+        }
+
+        // Functie om te bepalen wie er wint
+        function playRound(playerSelection, computerSelection) {
+            if (playerSelection === computerSelection) {
+                return "Gelijkspel!";
+            } else if (
+                (playerSelection === "steen" && computerSelection === "schaar") ||
+                (playerSelection === "papier" && computerSelection === "steen") ||
+                (playerSelection === "schaar" && computerSelection === "papier")
+            ) {
+                return "Jij wint!";
+            } else {
+                return "Computer wint!";
+            }
+        }
+
+        // Event listener for all buttons
+        document.querySelectorAll("button").forEach(button => {
+            button.addEventListener("click", function () {
+                const computerSelection = computerPlay();
+                const playerSelection = button.id.replace("btn", "");
+                const result = playRound(playerSelection, computerSelection);
+
+                document.getElementById("computer").innerText = computerSelection;
+                document.getElementById("human").innerText = playerSelection;
+                document.getElementById("result").innerText = result;
+            });
+        });
+
+    </script>
+
+    <style>
+        .screen {
+            display: flex;
+            flex-direction: column;
+            width: 100vw;
+            height: 100vh;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .content {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        button {
+            border: none;
+            background-color: transparent;
+            cursor: pointer;
+            transition: all ease-in 0.2s;
+        }
+
+        button img {
+            width: 100px;
+        }
+
+        button:hover {
+            transform: scale(1.1);
+        }
+    </style>
+
+</body>
+
+</html>
