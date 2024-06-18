@@ -10,28 +10,54 @@
 
 <body>
 
-    <div class="screen"">
+    <div class="screen">
+
+        <h1>Steen Papier Schaar</h1>
 
         <div class="content">
-            <h1>Computer:</h1><span id="computer"></span>
-            <br>
-            <h1>Jouw Keuze:</h1><span id="human"></span>
-            <br>
-            <h1>Uitkomst:</h1><span id="result"></span>
+            <div class="result-section">
+                <h2>Cpu:</h2><span id="computer" class="choice"></span>
+            </div>
+            <div class="result-section">
+                <h2>Your choice:</h2><span id="human" class="choice"></span>
+            </div>
+            <div class="result-section">
+                <h2>Result:</h2><span id="result" class="choice"></span>
+            </div>
         </div>
 
-        <div style="padding-top: 40px;">
+        <div class="button-section">
             <button id="steenbtn"><img src="img/steen.png" alt="steen"></button>
             <button id="papierbtn"><img src="img/papier.png" alt="papier"></button>
             <button id="schaarbtn"><img src="img/schaar.png" alt="schaar"></button>
         </div>
 
+        <div class="counters">
+            <h2>Rounds: <span id="rounds">0</span></h2>
+            <h2>Streak: <span id="streak">0</span></h2>
+            <h2>Player Wins: <span id="playerWins">0</span></h2>
+            <h2>Computer Wins: <span id="computerWins">0</span></h2>
+        </div>
+
+        <div class="reset-section">
+            <button id="resetbtn">Reset</button>
+        </div>
+
     </div>
 
     <script>
-
         // Array met keuzes
-        const choices = ["steen", "papier", "schaar"];
+        const choices = [
+            { name: "steen", image: "img/steen.png" },
+            { name: "papier", image: "img/papier.png" },
+            { name: "schaar", image: "img/schaar.png" }
+        ];
+
+        // Counters
+        let roundCounter = 0;
+        let humanStreakCounter = 0;
+        let playerWinsCounter = 0;
+        let computerWinsCounter = 0;
 
         // Functie om een willekeurige keuze te maken voor de computer
         function computerPlay() {
@@ -40,12 +66,12 @@
 
         // Functie om te bepalen wie er wint
         function playRound(playerSelection, computerSelection) {
-            if (playerSelection === computerSelection) {
+            if (playerSelection === computerSelection.name) {
                 return "Gelijkspel!";
             } else if (
-                (playerSelection === "steen" && computerSelection === "schaar") ||
-                (playerSelection === "papier" && computerSelection === "steen") ||
-                (playerSelection === "schaar" && computerSelection === "papier")
+                (playerSelection === "steen" && computerSelection.name === "schaar") ||
+                (playerSelection === "papier" && computerSelection.name === "steen") ||
+                (playerSelection === "schaar" && computerSelection.name === "papier")
             ) {
                 return "Jij wint!";
             } else {
@@ -53,22 +79,59 @@
             }
         }
 
-        // Event listener for all buttons
-        document.querySelectorAll("button").forEach(button => {
+        // Functie om de ronde, streak en wins bij te werken
+        function updateCounters(result) {
+            roundCounter++;
+            document.getElementById("rounds").innerText = roundCounter;
+
+            if (result === "Jij wint!") {
+                humanStreakCounter++;
+                playerWinsCounter++;
+            } else {
+                humanStreakCounter = 0;
+                if (result === "Computer wint!") {
+                    computerWinsCounter++;
+                }
+            }
+            document.getElementById("streak").innerText = humanStreakCounter;
+            document.getElementById("playerWins").innerText = playerWinsCounter;
+            document.getElementById("computerWins").innerText = computerWinsCounter;
+        }
+
+        // Event listeners voor de keuze knoppen
+        document.querySelectorAll("button:not(#resetbtn)").forEach(button => {
             button.addEventListener("click", function () {
                 const computerSelection = computerPlay();
                 const playerSelection = button.id.replace("btn", "");
+                const playerChoice = choices.find(choice => choice.name === playerSelection);
                 const result = playRound(playerSelection, computerSelection);
 
-                document.getElementById("computer").innerText = computerSelection;
-                document.getElementById("human").innerText = playerSelection;
+                document.getElementById("computer").innerHTML = `<img src="${computerSelection.image}" alt="${computerSelection.name}" style="width: 50px;">`;
+                document.getElementById("human").innerHTML = `<img src="${playerChoice.image}" alt="${playerChoice.name}" style="width: 50px;">`;
                 document.getElementById("result").innerText = result;
+
+                updateCounters(result);
             });
+        });
+
+        // Event listener voor de reset knop
+        document.getElementById("resetbtn").addEventListener("click", function () {
+            location.reload();
         });
 
     </script>
 
     <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            height: 100%;
+            overflow-x: hidden;
+            font-family: Arial, sans-serif;
+        }
+
         .screen {
             display: flex;
             flex-direction: column;
@@ -76,6 +139,16 @@
             height: 100vh;
             align-items: center;
             justify-content: center;
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            color: #333;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 36px;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .content {
@@ -84,6 +157,35 @@
             align-items: center;
             justify-content: center;
             gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .result-section {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 5px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .result-section h2 {
+            margin: 0;
+            font-size: 20px;
+            color: #fff;
+        }
+
+        .choice {
+            font-size: 18px;
+            color: #fff;
+        }
+
+        .button-section {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
         }
 
         button {
@@ -98,7 +200,45 @@
         }
 
         button:hover {
-            transform: scale(1.1);
+            transform: scale(1.05);
+        }
+
+        button:active {
+            transform: scale(0.9);
+        }
+
+        #resetbtn {
+            margin-top: 40px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border: 2px solid #333;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all ease-in 0.2s;
+        }
+
+        #resetbtn:hover {
+            background-color: #333;
+            color: #fff;
+        }
+
+        .counters {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .counters h2 {
+            margin: 5px 0;
+            font-size: 20px;
+            color: #fff;
         }
     </style>
 
